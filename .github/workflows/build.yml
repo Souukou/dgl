@@ -71,9 +71,9 @@ jobs:
         mkdir -p build
         cd build
         if [ "${{ github.event.inputs.platform-type }}" == "GPU" ]; then
-          cmake -DBUILD_TYPE=${{ github.event.inputs.build-type }} -DUSE_CUDA=OFF ${{ github.event.inputs.extra_args }} ..
-        else
           cmake -DBUILD_TYPE=${{ github.event.inputs.build-type }} -DUSE_CUDA=ON ${{ github.event.inputs.extra_args }} ..
+        else
+          cmake -DBUILD_TYPE=${{ github.event.inputs.build-type }} -DUSE_CUDA=OFF ${{ github.event.inputs.extra_args }} ..
         fi
         make -j$(nproc)
 
