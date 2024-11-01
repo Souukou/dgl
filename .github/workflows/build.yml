@@ -1,0 +1,68 @@
+name: Build DGL from Source
+
+on:
+  workflow_dispatch:
+    inputs:
+      build-type:
+        description: 'Build type (CPU/GPU)'
+        required: true
+        default: 'CPU'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Install system packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential python3-dev make cmake
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Create conda environment
+      run: |
+        sudo apt-get install -y wget
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+        source $HOME/miniconda/bin/activate
+        if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
+          bash script/create_dev_conda_env.sh -g 11.7
+        else
+          bash script/create_dev_conda_env.sh -c
+        fi
+
+    - name: Build shared library
+      run: |
+        source $HOME/miniconda/bin/activate dgl-dev
+        if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
+          bash script/build_dgl.sh -g
+        else
+          bash script/build_dgl.sh -c
+        fi
+
+    - name: Install wheel package
+      run: |
+        source $HOME/miniconda/bin/activate dgl-dev
+        pip install wheel
+
+    - name: Build wheel
+      working-directory: ./python
+      run: |
+        source $HOME/miniconda/bin/activate dgl-dev
+        python setup.py bdist_wheel
+
+    - name: Upload wheel as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dgl-wheel
+        path: ./python/dist/*.whl
