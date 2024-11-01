@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       build-type:
+        type: string
+        description: 'Extra build arguments'
+        required: true
+        default: ''
+      platform-type:
         type: choice
         description: 'Build type (CPU/GPU)'
         required: true
@@ -16,6 +21,12 @@ on:
         description: 'CUDA version (GPU build only)'
         required: false
         default: '12.8'
+      extra_args:
+        type: string
+        description: 'Extra build arguments'
+        required: false
+        default: ''
+
 
 jobs:
   build:
@@ -44,7 +55,7 @@ jobs:
         bash miniconda.sh -b -p $HOME/miniconda
         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
         source $HOME/miniconda/bin/activate
-        if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
+        if [ "${{ github.event.inputs.platform-type }}" == "GPU" ]; then
           bash script/create_dev_conda_env.sh -s -g 12.4 -n dgl-dev
         else
           bash script/create_dev_conda_env.sh -s -c -n dgl-dev
@@ -53,11 +64,14 @@ jobs:
     - name: Build shared library
       run: |
         source $HOME/miniconda/bin/activate dgl-dev
-        if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
-          bash script/build_dgl.sh -g
+        mkdir -p build
+        cd build
+        if [ "${{ github.event.inputs.platform-type }}" == "GPU" ]; then
+          cmake -DBUILD_TYPE=${{ github.event.inputs.build-type }} -DUSE_CUDA=OFF ${{ github.event.inputs.extra_args }} ..
         else
-          bash script/build_dgl.sh -c
+          cmake -DBUILD_TYPE=${{ github.event.inputs.build-type }} -DUSE_CUDA=ON ${{ github.event.inputs.extra_args }} ..
         fi
+        make -j$(nproc)
 
     - name: Install wheel package
       run: |
