@@ -36,9 +36,9 @@ jobs:
         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
         source $HOME/miniconda/bin/activate
         if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
-          bash script/create_dev_conda_env.sh -s -g 12.4
+          bash script/create_dev_conda_env.sh -s -g 12.4 -n dgl-dev
         else
-          bash script/create_dev_conda_env.sh -s -c
+          bash script/create_dev_conda_env.sh -s -c -n dgl-dev
         fi
 
     - name: Build shared library
