@@ -38,7 +38,7 @@ jobs:
         if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
           bash script/create_dev_conda_env.sh -s -g 12.4
         else
-          bash script/create_dev_conda_env.sh -c
+          bash script/create_dev_conda_env.sh -s -c
         fi
 
     - name: Build shared library
