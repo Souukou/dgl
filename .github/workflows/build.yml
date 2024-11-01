@@ -24,7 +24,7 @@ on:
         type: string
         description: 'CUDA version (GPU build only)'
         required: false
-        default: '12.8'
+        default: '12.4'
       extra_args:
         type: string
         description: 'Extra build arguments'
@@ -51,6 +51,13 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+
+    - name: Install CUDA Toolkit (GPU only)
+      if: ${{ github.event.inputs.platform-type == 'GPU' }}
+      uses: Jimver/cuda-toolkit@v0.2.18
+      id: cuda-toolkit
+      with:
+        cuda: ${{ github.event.inputs.cuda-version }}
 
     - name: Create conda environment
       run: |
@@ -89,7 +96,7 @@ jobs:
         python setup.py bdist_wheel
 
     - name: Upload wheel as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dgl-wheel
         path: ./python/dist/*.whl
