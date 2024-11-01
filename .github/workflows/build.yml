@@ -31,7 +31,7 @@ jobs:
     - name: Create conda environment
       run: |
         sudo apt-get install -y wget
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
         bash miniconda.sh -b -p $HOME/miniconda
         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
         source $HOME/miniconda/bin/activate
