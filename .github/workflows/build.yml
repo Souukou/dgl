@@ -5,9 +5,13 @@ on:
     inputs:
       build-type:
         type: string
-        description: 'Extra build arguments'
+        description: 'Build type (Release/Debug)'
         required: true
         default: ''
+        options: 
+        - 'release'
+        - 'dev'
+        - 'dogfood'
       platform-type:
         type: choice
         description: 'Build type (CPU/GPU)'
