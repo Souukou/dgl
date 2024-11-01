@@ -36,7 +36,7 @@ jobs:
         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
         source $HOME/miniconda/bin/activate
         if [ "${{ github.event.inputs.build-type }}" == "GPU" ]; then
-          bash script/create_dev_conda_env.sh -g 11.7
+          bash script/create_dev_conda_env.sh -s -g 12.4
         else
           bash script/create_dev_conda_env.sh -c
         fi
