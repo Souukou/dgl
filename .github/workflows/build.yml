@@ -4,9 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       build-type:
+        type: choice
         description: 'Build type (CPU/GPU)'
         required: true
         default: 'CPU'
+        options: 
+        - 'CPU'
+        - 'GPU'
+      cuda-version:
+        type: string
+        description: 'CUDA version (GPU build only)'
+        required: false
+        default: '12.8'
 
 jobs:
   build:
