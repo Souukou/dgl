@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       build-type:
-        type: string
+        type: choice
         description: 'Build type (Release/Debug)'
         required: true
-        default: ''
+        default: 'release'
         options: 
         - 'release'
         - 'dev'
